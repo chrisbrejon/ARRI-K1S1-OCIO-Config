@@ -1,0 +1,506 @@
+ocio_profile_version: 1
+search_path: transforms:looks
+strictparsing: true
+luma: [0.2126, 0.7152, 0.0722]
+
+description: ARRI K1S1 for OCIO v1.2
+
+roles:
+  color_picking: linear
+  color_timing: logc3_arriwg3
+  compositing_log: logc3_arriwg3
+  data: raw
+  default: linear
+  matte_paint: cineonlog_rec709
+  rendering: linear
+  scene_linear: linear
+  texture_paint: linear
+  mari_monitor: rec709_display
+  mari_scalar_monitor: rec709_display
+  mari_color_picker: rec709_display
+  mari_working: linear
+  mari_int8: srgb_texture
+  mari_int16: srgb_texture
+  mari_int_scalar: raw
+  mari_scalar8: raw
+  mari_float: linear
+  substance_3d_painter_standard_srgb: srgb_texture
+  substance_3d_painter_bitmap_import_8bit: srgb_texture
+  substance_3d_painter_bitmap_import_16bit: srgb_texture
+  substance_3d_painter_bitmap_import_floating: linear
+  substance_3d_painter_substance_material: srgb_texture
+  substance_3d_painter_bitmap_export_8bit: srgb_texture
+  substance_3d_painter_bitmap_export_16bit: srgb_texture
+  substance_3d_painter_bitmap_export_floating: linear  
+
+displays:
+  Rec1886 100 nits video dim:
+    - !<View> {name: ARRI K1S1, colorspace: K1S1 - Rec.709 - 2.4 Gamma}    
+    - !<View> {name: Un-tone-mapped, colorspace: rec709_display}
+    - !<View> {name: Log, colorspace: cineonlog_rec709}    
+    - !<View> {name: Raw, colorspace: raw}
+
+##################################### SCENE-REFERRED ##############################################
+
+colorspaces:
+  - !<ColorSpace>
+    name: linear
+    bitdepth: 32f
+    family: SceneReferred
+    description: Linear - Rec.709  
+    to_reference: !<MatrixTransform> {matrix: [0.4338873, 0.3762240, 0.1898886, 0, 0.2126390, 0.7151687, 0.0721923, 0, 0.0177500, 0.1094476, 0.8728023, 0, 0, 0, 0, 1]}
+    allocation: lg2
+    allocationvars: [-10, 7, 0.0056065625]
+
+  - !<ColorSpace>
+    name: cineonlog_rec709
+    bitdepth: 32f    
+    family: SceneReferred
+    description: Grading Space
+    to_reference: !<GroupTransform>
+      children:
+        - !<FileTransform> {src: CineonLog_2_Linear.spi1d, interpolation: linear}
+        - !<MatrixTransform> {matrix: [0.4338873, 0.3762240, 0.1898886, 0, 0.2126390, 0.7151687, 0.0721923, 0, 0.0177500, 0.1094476, 0.8728023, 0, 0, 0, 0, 1]}
+
+  - !<ColorSpace>
+    name: logc3_arriwg3
+    family: SceneReferred
+    bitdepth: 32f
+    description: Grading Space
+    to_reference: !<GroupTransform>
+      children:
+        - !<FileTransform> {src: LogC_2_Linear.spi1d, interpolation: linear}
+        - !<MatrixTransform> {matrix: [0.6801393, 0.2361076, 0.0837541, 0, 0.2960160, 0.8266239, -0.1226395, 0, 0.0020570, -0.0625630, 1.0605060, 0, 0, 0, 0, 1]}
+
+  - !<ColorSpace>
+    name: lin_xyz
+    bitdepth: 32f
+    family: SceneReferred
+    description: linear reference space
+    allocation: lg2
+    allocationvars: [-10, 7, 0.0056065625]
+
+  - !<ColorSpace>
+    name: aces
+    bitdepth: 32f
+    family: SceneReferred
+    description: Linear - AP0
+    to_reference: !<MatrixTransform> {matrix: [0.9999017, 0.0000000, 0.0000983, 0, 0.3439664, 0.7281661, -0.0721325, 0, 0.0000000, 0.0000000, 1.0000000, 0, 0, 0, 0, 1]}
+    allocation: lg2
+    allocationvars: [-10, 7, 0.0056065625]  
+
+  - !<ColorSpace>
+    name: acescg
+    bitdepth: 32f
+    family: SceneReferred
+    description: Linear - AP1  
+    to_reference: !<MatrixTransform> {matrix: [0.6953833105, 0.1406652586, 0.1639514308, 0, 0.2722287168, 0.6740817658, 0.0536895174, 0, -0.0055258826, 0.0040252103, 1.0015006723, 0, 0, 0, 0, 1]}
+    allocation: lg2
+    allocationvars: [-10, 7, 0.0056065625]
+
+##################################### DISPLAY-REFERRED ##############################################
+
+  - !<ColorSpace>
+    name: K1S1 - Rec.709 - 2.4 Gamma
+    family: DisplayReferred
+    bitdepth: 32f
+    from_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: lin_xyz, dst: logc3_arriwg3}
+        - !<FileTransform> {src: ARRI_LogC_WG_full_2_Rec1886_Rec709_Full_ALF-2.cub, interpolation: tetrahedral}
+    to_reference: !<GroupTransform>
+      children:
+        - !<FileTransform> {src: ARRI_LogC_WG_full_2_Rec1886_Rec709_Full_ALF-2_inv.cub, interpolation: tetrahedral}
+        - !<ColorSpaceTransform> {src: logc3_arriwg3, dst: lin_xyz}        
+
+############################################## UTILITY ##############################################         
+
+  - !<ColorSpace>
+    name: raw
+    family: Utility
+    equalitygroup: Raw
+    bitdepth: 32f
+    description: The Raw color space
+    isdata: true
+    allocation: uniform
+    allocationvars: [0, 1]
+
+  - !<ColorSpace>
+    name: srgb_texture
+    family: Utility
+    equalitygroup: sRGB - Texture
+    bitdepth: 32f
+    description: The sRGB - Texture color space
+    isdata: false
+    allocation: uniform
+    allocationvars: [0, 1]
+    from_reference: !<GroupTransform>
+      children:
+        - !<MatrixTransform> {matrix: [0.4338873, 0.3762240, 0.1898886, 0, 0.2126390, 0.7151687, 0.0721923, 0, 0.0177500, 0.1094476, 0.8728023, 0, 0, 0, 0, 1], direction: inverse}
+        - !<FileTransform> {src: linear_to_sRGB.spi1d, interpolation: linear}
+
+  - !<ColorSpace>
+    name: rec709_display
+    family: Utility
+    equalitygroup: Rec.709 - Display
+    bitdepth: 32f
+    description: The Rec.709 - Display color space
+    isdata: false
+    allocation: uniform
+    allocationvars: [0, 1]
+    from_reference: !<GroupTransform>
+      children:
+        - !<MatrixTransform> {matrix: [0.4338873, 0.3762240, 0.1898886, 0, 0.2126390, 0.7151687, 0.0721923, 0, 0.0177500, 0.1094476, 0.8728023, 0, 0, 0, 0, 1], direction: inverse}
+        - !<FileTransform> {src: linear_to_rec1886.spi1d, interpolation: linear}
+
+######################################## LOOKS ######################################################
+
+looks:
+- !<Look>
+  name: 1110 Black and White
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_1110_Black_and_White.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 1111 Black and White
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_1111_Black_and_White.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 1120 Black and White - Night sky
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_1120_Black_and_White_-_Night_sky.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 2110 Commercial
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_2110_Commercial.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 2111 Commercial
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_2111_Commercial.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 2120 Fashion
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_2120_Fashion.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 2121 Fashion
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_2121_Fashion.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 2130 Beauty
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_2130_Beauty.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 2131 Beauty
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_2131_Beauty.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 3110 Film A
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_3110_Film_A.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 3111 Film B
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_3111_Film_B.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 3112 Film C
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_3112_Film_C.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 3113 Film D
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_3113_Film_D.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 3114 Film E
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_3114_Film_E.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 3150 Film Process Bleach Bypass
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_3150_Film_process_-_Bleach_bypass.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 3151 Film Process Bleach Bypass
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_3151_Film_process_-_Bleach_bypass.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 3210 Vintage
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_3210_Vintage.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 3211 Vintage
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_3211_Vintage.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 3220 Analog
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_3220_Analog.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 3221 Analog
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_3221_Analog.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 3230 Retro
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_3230_Retro.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 3231 Retro
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_3231_Retro.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 3240 Faded
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_3240_Faded.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 3241 Faded
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_3241_Faded.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 3250 Cross
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_3250_Cross.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 3410 Film Teal And Orange
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_3410_Film_-_Teal_and_orange.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 3411 Film Teal And Orange
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_3411_Film_-_Teal_and_orange.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 3420 Video Teal And Orange
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_3420_Video_-_Teal_and_orange.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 4110 Tinted Desert
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_4110_Tinted_-_Desert.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 4120 Tinted Sepia
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_4120_Tinted_-_Sepia.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 4130 Tinted Orange
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_4130_Tinted_-_Orange.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 4131 Tinted Orange
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_4131_Tinted_-_Orange.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 4140 Tinted Earth
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_4140_Tinted_-_Earth.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 4150 Tinted White
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_4150_Tinted_-_White.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 4160 Tinted Teal
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_4160_Tinted_-_Teal.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 4170 Tinted Blue Sky
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_4170_Tinted_-_Blue_sky.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 4180 Tinted Ocean
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_4180_Tinted_-_Ocean.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 4190 Tinted Aqua
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_4190_Tinted_-_Aqua.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 4210 Tinted Green
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_4210_Tinted_-_Green.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 4220 Tinted Magenta
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_4220_Tinted_-_Magenta.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 4230 Tinted Yellow
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_4230_Tinted_-_Yellow.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 4240 Tinted Fire
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_4240_Tinted_-_Fire.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 5110 Nature
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_5110_Nature.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 5111 Nature
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_5111_Nature.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 5120 City
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_5120_City.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 5121 City
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_5121_City.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 5122 City
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_5122_City.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 5130 Suburban
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_5130_Suburban.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 5131 Suburban
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_5131_Suburban.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 5210 Vibrant
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_5210_Vibrant.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 5220 Desaturated
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_5220_Desaturated.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 5230 Saturated
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_5230_Saturated.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 6110 Warm
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_6110_Warm.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 6111 Warm
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_6111_Warm.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 6112 Warm
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_6112_Warm.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 6120 Cold
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_6120_Cold.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 6121 Cold
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_6121_Cold.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 6210 Spring
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_6210_Spring.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 6220 Sommer
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_6220_Sommer.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 6230 Autumn
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_6230_Autumn.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 6240 Winter
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_6240_Winter.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 6310 Pastel
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_6310_Pastel.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 6311 Pastel
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_6311_Pastel.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 6410 Sunset
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_6410_Sunset.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 6420 Early Morning
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_6420_Early_Morning.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 6610 Desert
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_6610_Desert.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 6620 Snow
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_6620_Snow.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 7110 Low Contrast
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_7110_Low_Contrast.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 7111 Low Contrast
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_7111_Low_Contrast.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 7120 High Contrast
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_7120_High_Contrast.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 7121 High Contrast
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_7121_High_Contrast.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 7130 High Key
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_7130_High_Key.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 7131 High Key
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_7131_High_Key.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 7140 Low Key
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_7140_Low_Key.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 8120 Twenties
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_8120_20s.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 8130 Thirties
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_8130_30s.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 8140 Forties
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_8140_40s.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 8150 Fifties
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_8150_50s.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 8160 Sixties
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_8160_60s.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 8170 Seventies
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_8170_70s.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 8180 Eighties
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_8180_80s.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 8190 Nineties
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_8190_90s.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 9110 Dream
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_9110_Dream.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 9111 Dream
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_9111_Dream.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 9120 Flash Back
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_9120_Flash_Back.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 9210 Day For Night
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_9210_Day_for_Night.cub, interpolation: tetrahedral}
+- !<Look>
+  name: 9211 Day For Night
+  process_space: logc3_arriwg3
+  transform: !<FileTransform> {src: ARRI_LL_9211_Day_for_Night.cub, interpolation: tetrahedral}            

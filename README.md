@@ -26,15 +26,13 @@ Original files (encoded in "linear-AP0") are available [here](https://www.dropbo
 * One may easily add several colorspaces or displays for HDR output if needed (such as "p3_d65_pq")
 
 # Looks
-* So far two looks have been added: "Contrast CDL" and "Warmy CDL"
-* They have been inspired by the Filmic and AgX OCIO configs (please find links below)
-* The use of Looks is highly recommended with Open DRT
+* 87 looks from the ARRI Look Library have been uploaded
+* The use of Looks is highly recommended with ARRI K1S1
 * To use one of the looks, you need to combine it with a View (it is not complicated)
 
 # Other available Color Management Workflows
 | Name                                                                                             | Author               | Release date |              Observations                             |
 |:---:                                                                                             |         :---:        |      :---:   |                 :---:                                 |
-| [ARRI K1S1](https://www.arri.com/en/learn-help/learn-help-camera-system/tools/lut-generator)     | Harald Brendel       | 2011         | THE most used LUT on the planet (ARRI Alexa workflow) |
 | [Filmic](https://github.com/sobotka/filmic-blender)                                              | Troy Sobotka         | 2017         | Original Blender Color Management used on [this movie](https://www.youtube.com/watch?v=uf3ALGKgpGU) |
 | [RED IPP2](https://support.red.com/hc/en-us/articles/360041467533-RED-LUT-Downloads)             | Graeme Natress       | 2017         | RED Image Processing Pipeline |
 | [ACES](https://github.com/AcademySoftwareFoundation/OpenColorIO-Config-ACES/releases)            | AMPAS                | 2021         | Color Encoding System developed by the Academy |
@@ -42,3 +40,4 @@ Original files (encoded in "linear-AP0") are available [here](https://www.dropbo
 | [ARRI Reveal](https://www.arri.com/en/learn-help/learn-help-camera-system/tools/lut-generator)   | Sean Cooper          | 2022         | The new ARRI Alexa35 workflow described [here](https://www.youtube.com/watch?v=s_RXjVeC_7s) |
 | [Tony](https://github.com/h3r2tic/tony-mc-mapface)                                     | Tomasz Stachowiak    | 2023         | A cool-headed display transform |
 | [AgX Blender](https://github.com/EaryChow/AgX)                                                   | Eary Chow            | 2023         | Blender Color Management used on [this video game](https://www.youtube.com/watch?v=mVjBRZqajYY) |
+| [Open DRT](https://github.com/jedypod/open-display-transform)                                    | Jed Smith            | 2024         | State-of-the-art Color Management Workflow |

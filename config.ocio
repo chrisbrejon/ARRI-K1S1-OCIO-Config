@@ -40,6 +40,9 @@ displays:
     - !<View> {name: Log, colorspace: cineonlog_rec709}    
     - !<View> {name: Raw, colorspace: raw}
 
+active_displays: [Rec1886 100 nits Video dim]
+active_views: [ARRI K1S1, Un-tone-mapped, Log, Raw]    
+
 ##################################### SCENE-REFERRED ##############################################
 
 colorspaces:

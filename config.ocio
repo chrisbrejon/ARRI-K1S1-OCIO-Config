@@ -35,7 +35,7 @@ roles:
 
 displays:
   Rec1886 100 nits video dim:
-    - !<View> {name: ARRI K1S1, colorspace: K1S1 - Rec.709 - 2.4 Gamma}    
+    - !<View> {name: ARRI K1S1, colorspace: ARRI K1S1 - Rec.709 - 2.4 Gamma}    
     - !<View> {name: Un-tone-mapped, colorspace: rec709_display}
     - !<View> {name: Log, colorspace: cineonlog_rec709}    
     - !<View> {name: Raw, colorspace: raw}
@@ -104,7 +104,7 @@ colorspaces:
 ##################################### DISPLAY-REFERRED ##############################################
 
   - !<ColorSpace>
-    name: K1S1 - Rec.709 - 2.4 Gamma
+    name: ARRI K1S1 - Rec.709 - 2.4 Gamma
     family: DisplayReferred
     bitdepth: 32f
     from_reference: !<GroupTransform>

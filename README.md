@@ -28,7 +28,9 @@ Original files (encoded in "linear-AP0") are available [here](https://www.dropbo
 # Looks
 * 87 looks from the [ARRI Look Library](https://www.arri.com/en/learn-help/learn-help-camera-system/tools/arri-look-library-app) have been uploaded
 * The use of Looks is highly recommended with ARRI K1S1
-* To use one of the looks, you need to combine it with a View (it is not complicated)
+* To use one of the looks, you need to combine it with a View. Like this for instance:
+
+```- !<View> {name: ARRI K1S1 Vibrant, colorspace: ARRI K1S1 - Rec.709 - 2.4 Gamma, looks: 5210 Vibrant}```
 
 # Other available Color Management Workflows
 | Name                                                                                             | Author               | Release date |              Observations                             |

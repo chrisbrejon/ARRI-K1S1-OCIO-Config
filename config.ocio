@@ -450,9 +450,9 @@ looks:
     transform: !<FileTransform> {src: ARRI_LL_6210_Spring.cub, interpolation: tetrahedral}
 
   - !<Look>
-    name: 6220 Sommer
+    name: 6220 Summer
     process_space: logc3_arriwg3
-    transform: !<FileTransform> {src: ARRI_LL_6220_Sommer.cub, interpolation: tetrahedral}
+    transform: !<FileTransform> {src: ARRI_LL_6220_Summer.cub, interpolation: tetrahedral}
 
   - !<Look>
     name: 6230 Autumn

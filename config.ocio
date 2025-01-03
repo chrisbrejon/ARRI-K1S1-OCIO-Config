@@ -89,7 +89,7 @@ colorspaces:
     name: aces
     family: SceneReferred    
     bitdepth: 32f
-    description: ACES - Linear - AP0 - ACES White Point (~D60)
+    description: ACES 2065-1 - Linear - AP0 - ACES White Point (~D60)
     to_reference: !<MatrixTransform> {matrix: [0.9999017, 0.0000000, 0.0000983, 0, 0.3439664, 0.7281661, -0.0721325, 0, 0.0000000, 0.0000000, 1.0000000, 0, 0, 0, 0, 1]}
     allocation: lg2
     allocationvars: [-10, 7, 0.0056065625]  
@@ -98,7 +98,7 @@ colorspaces:
     name: acescg
     family: SceneReferred    
     bitdepth: 32f
-    description: ACES - Linear - AP1 - ACES White Point (~D60)
+    description: ACEScg - Linear - AP1 - ACES White Point (~D60)
     to_reference: !<MatrixTransform> {matrix: [0.6953833105, 0.1406652586, 0.1639514308, 0, 0.2722287168, 0.6740817658, 0.0536895174, 0, -0.0055258826, 0.0040252103, 1.0015006723, 0, 0, 0, 0, 1]}
     allocation: lg2
     allocationvars: [-10, 7, 0.0056065625]

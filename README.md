@@ -23,6 +23,7 @@ Original files (encoded in "linear-AP0") are available [here](https://www.dropbo
 * "logc3_arriwg3" is the shaper space. It can be used for color timing and some log operations (such as sharpen)
 * Substance_painter roles were set following [this page](https://mrlixm.github.io/blog/substance-painter-color-management/)
 * An inverse of the View Transform has been provided even though it is not perfect
+* Please note that the inverted LUT was not ARRI-originated (I respected the naming convention from [this guide](https://www.arri.com/resource/blob/294602/67ddc229fc77f6f27551fc2613302dfc/arri-lut-naming-convention-logc4-and-logc3-guideline-en-data.pdf))
 * One may easily add several colorspaces or displays for HDR output if needed (such as "p3_d65_pq")
 
 # Looks
@@ -46,3 +47,11 @@ Original files (encoded in "linear-AP0") are available [here](https://www.dropbo
 | [AgX SB2383](https://github.com/sobotka/SB2383-Configuration)                                    | Troy Sobotka         | 2024         | Minimal AgX OCIO Config using Linear BT.709 |
 | [JP-2499](https://github.com/jedypod/JP2499)                                                     | JP Zambrano          | 2024         | A popular picture formation pipeline described [here](https://www.liftgammagain.com/forum/index.php?threads/2499-drt-an-alternative-picture-formation-pipeline.18639/) |
 | [Open DRT](https://github.com/jedypod/open-display-transform)                                    | Jed Smith            | 2024         | State-of-the-art Color Management Workflow |
+
+# Appendix: is it K1S1 or ALF-2 ?
+* On January, 1st of 2025, Joseph Goldstone provided the following information on the OCIO slack.
+* K1S1 could be constructed as a concatenated EI-specific inverse LogC3 curve, a matrix from AWG3 to Rec. 709, a tonemapping operator and a gamma correction curve. That's how the original ALEXA cameras worked, starting with SUP 3.0 in 2011.
+* ALF-2 files came in with the ARRI AMIRA (a documentarian targeted camera) around 2013, and entered the mainstream ALEXA line with the ALEXA Mini shortly thereafter.
+* The equations underlying the ALF-2 LUT were never made public, but what we always emphasized was that if you took something screaming red (think: Sunkist raisins packaging) with certain spectral power distributions under certain lighting, where K1S1 would way oversaturate, the base ALF-2 LUT pulled the reds in.
+* It could do this because, unlike the mainstream ALEXA line up to (I think) the ALEXA SXT, the AMIRA and the Mini had a 3D LUT in the processing path whereas the others had only a LUT-matrix-LUT path.
+* The improvement between K1S1 and base ALF-2 was so small, and the circumstances under which one would see the differences so rare, that colorists worldwide kept using K1S1. They did this even when we (from the beginning) embedded the ALF-2 base UT at the start of every clip those cameras produced.

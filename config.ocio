@@ -9,7 +9,7 @@ roles:
   color_picking: linear
   color_timing: logc3_arriwg3
   compositing_log: logc3_arriwg3
-  data: raw
+  data: non-colour data
   default: linear
   matte_paint: cineonlog_rec709
   rendering: linear
@@ -21,9 +21,11 @@ roles:
   mari_working: linear
   mari_int8: srgb_texture
   mari_int16: srgb_texture
-  mari_int_scalar: raw
-  mari_scalar8: raw
+  mari_int_scalar: non-colour data
+  mari_scalar8: non-colour data
   mari_float: linear
+  reference: lin_xyz
+  srgb_linear: linear  
   substance_3d_painter_standard_srgb: srgb_texture
   substance_3d_painter_bitmap_import_8bit: srgb_texture
   substance_3d_painter_bitmap_import_16bit: srgb_texture
@@ -36,30 +38,30 @@ roles:
 displays:
   Rec1886 100 nits video dim:
     - !<View> {name: ARRI K1S1, colorspace: ARRI K1S1 - Rec.709 - 2.4 Gamma}    
-    - !<View> {name: Un-tone-mapped, colorspace: rec709_display}
+    - !<View> {name: Display Encoding, colorspace: rec709_display}
     - !<View> {name: Log, colorspace: cineonlog_rec709}    
-    - !<View> {name: Raw, colorspace: raw}
+    - !<View> {name: None, colorspace: non-colour data}
 
 active_displays: [Rec1886 100 nits Video dim]
-active_views: [ARRI K1S1, Un-tone-mapped, Log, Raw]    
+active_views: [ARRI K1S1, Display Encoding, Log, None]    
 
 ##################################### SCENE-REFERRED ##############################################
 
 colorspaces:
   - !<ColorSpace>
     name: linear
+    family: SceneReferred    
     bitdepth: 32f
-    family: SceneReferred
-    description: Linear - Rec.709  
+    description: Linear - Rec.709 - D65
     to_reference: !<MatrixTransform> {matrix: [0.4338873, 0.3762240, 0.1898886, 0, 0.2126390, 0.7151687, 0.0721923, 0, 0.0177500, 0.1094476, 0.8728023, 0, 0, 0, 0, 1]}
     allocation: lg2
     allocationvars: [-10, 7, 0.0056065625]
 
   - !<ColorSpace>
     name: cineonlog_rec709
-    bitdepth: 32f    
-    family: SceneReferred
-    description: Grading Space
+    family: SceneReferred    
+    bitdepth: 32f
+    description: Cineon Log - Rec.709 - D65
     to_reference: !<GroupTransform>
       children:
         - !<FileTransform> {src: CineonLog_2_Linear.spi1d, interpolation: linear}
@@ -67,9 +69,9 @@ colorspaces:
 
   - !<ColorSpace>
     name: logc3_arriwg3
+    family: SceneReferred    
     bitdepth: 32f    
-    family: SceneReferred
-    description: Grading Space
+    description: ARRI - LogC3 - ARRI Wide Gamut 3 - D65
     to_reference: !<GroupTransform>
       children:
         - !<FileTransform> {src: LogC_2_Linear.spi1d, interpolation: linear}
@@ -77,26 +79,26 @@ colorspaces:
 
   - !<ColorSpace>
     name: lin_xyz
+    family: SceneReferred    
     bitdepth: 32f
-    family: SceneReferred
-    description: Linear reference space
+    description: CIE - Linear - XYZ - E
     allocation: lg2
     allocationvars: [-10, 7, 0.0056065625]
 
   - !<ColorSpace>
     name: aces
+    family: SceneReferred    
     bitdepth: 32f
-    family: SceneReferred
-    description: Linear - AP0
+    description: ACES - Linear - AP0 - ACES White Point (~D60)
     to_reference: !<MatrixTransform> {matrix: [0.9999017, 0.0000000, 0.0000983, 0, 0.3439664, 0.7281661, -0.0721325, 0, 0.0000000, 0.0000000, 1.0000000, 0, 0, 0, 0, 1]}
     allocation: lg2
     allocationvars: [-10, 7, 0.0056065625]  
 
   - !<ColorSpace>
     name: acescg
+    family: SceneReferred    
     bitdepth: 32f
-    family: SceneReferred
-    description: Linear - AP1  
+    description: ACES - Linear - AP1 - ACES White Point (~D60)
     to_reference: !<MatrixTransform> {matrix: [0.6953833105, 0.1406652586, 0.1639514308, 0, 0.2722287168, 0.6740817658, 0.0536895174, 0, -0.0055258826, 0.0040252103, 1.0015006723, 0, 0, 0, 0, 1]}
     allocation: lg2
     allocationvars: [-10, 7, 0.0056065625]
@@ -107,23 +109,23 @@ colorspaces:
     name: ARRI K1S1 - Rec.709 - 2.4 Gamma
     family: DisplayReferred
     bitdepth: 32f
+    description: THE most used LUT on the planet (ARRI Alexa workflow) - Please note that the inverse is NOT an official ARRI LUT
     from_reference: !<GroupTransform>
       children:
         - !<ColorSpaceTransform> {src: lin_xyz, dst: logc3_arriwg3}
-        - !<FileTransform> {src: ARRI_LogC_WG_full_2_Rec1886_Rec709_Full_ALF-2.cub, interpolation: tetrahedral}
+        - !<FileTransform> {src: ARRI_LogC2Video_Classic709_davinci3d_33.cube, interpolation: tetrahedral}
     to_reference: !<GroupTransform>
       children:
-        - !<FileTransform> {src: ARRI_LogC_WG_full_2_Rec1886_Rec709_Full_ALF-2_inv.cub, interpolation: tetrahedral}
-        - !<ColorSpaceTransform> {src: logc3_arriwg3, dst: lin_xyz}        
+        - !<FileTransform> {src: CB_inverted_LogC2Video_Classic709_davinci3d_64.cube, interpolation: tetrahedral}
+        - !<ColorSpaceTransform> {src: logc3_arriwg3, dst: lin_xyz}      
 
 ############################################## UTILITY ##############################################         
 
   - !<ColorSpace>
-    name: raw
+    name: non-colour data
     family: Utility
-    equalitygroup: Raw
     bitdepth: 32f
-    description: The Raw color space
+    description: No operation
     isdata: true
     allocation: uniform
     allocationvars: [0, 1]
@@ -131,30 +133,26 @@ colorspaces:
   - !<ColorSpace>
     name: srgb_texture
     family: Utility
-    equalitygroup: sRGB - Texture
     bitdepth: 32f
-    description: The sRGB - Texture color space
-    isdata: false
-    allocation: uniform
-    allocationvars: [0, 1]
+    description: sRGB Piecewise Function - Rec.709 - D65
     from_reference: !<GroupTransform>
       children:
         - !<MatrixTransform> {matrix: [0.4338873, 0.3762240, 0.1898886, 0, 0.2126390, 0.7151687, 0.0721923, 0, 0.0177500, 0.1094476, 0.8728023, 0, 0, 0, 0, 1], direction: inverse}
         - !<FileTransform> {src: linear_to_sRGB.spi1d, interpolation: linear}
+    allocation: uniform
+    allocationvars: [0, 1]        
 
   - !<ColorSpace>
     name: rec709_display
     family: Utility
-    equalitygroup: Rec.709 - Display
     bitdepth: 32f
-    description: The Rec.709 - Display color space
-    isdata: false
-    allocation: uniform
-    allocationvars: [0, 1]
+    description: Gamma 2.4 - Rec.709 - D65
     from_reference: !<GroupTransform>
       children:
         - !<MatrixTransform> {matrix: [0.4338873, 0.3762240, 0.1898886, 0, 0.2126390, 0.7151687, 0.0721923, 0, 0.0177500, 0.1094476, 0.8728023, 0, 0, 0, 0, 1], direction: inverse}
         - !<FileTransform> {src: linear_to_rec1886.spi1d, interpolation: linear}
+    allocation: uniform
+    allocationvars: [0, 1]        
 
 ######################################## LOOKS ######################################################
 
@@ -593,4 +591,4 @@ looks:
     name: 9211 Day For Night
     process_space: logc3_arriwg3
     transform: !<FileTransform> {src: ARRI_LL_9211_Day_for_Night.cub, interpolation: tetrahedral}
-              
+          
